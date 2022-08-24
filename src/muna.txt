@@ -1,0 +1,70 @@
+import React from 'react'
+import {useQuery, gql, useLazyQuery} from '@apollo/client'
+
+
+let QUERY_ALL_USER = gql` 
+query allUser {
+users{
+id
+name 
+age 
+nationality 
+}
+}
+`
+
+let QUERY_NAME = gql` 
+query Username($name: String!) {
+username(name: $name){
+name
+age
+}
+}
+`
+
+function DisplayData() { 
+const [nameSearched, setNameSearched] = React.useState(' ')
+const [fetchName, {data: movieData, error: movieError}]  = useLazyQuery(QUERY_NAME)
+
+    const {data, loading} = useQuery(QUERY_ALL_USER) 
+    if(loading){
+        <h1>loading</h1>
+    }
+
+   
+
+  return (
+    <div> 
+        {data && data.users.map((item, i) => {
+            return (
+                <div key={i}>
+                 <h1>{item.name}</h1>
+                </div>
+            )
+        })}
+
+        <div> 
+            <input type="text" placeholder="Money Heist" 
+            onChange={(e) => setNameSearched(e.target.value)}
+            /> 
+            <button onClick={() => fetchName({variables: {
+                name: nameSearched
+            }})}>fetch</button>
+
+            {
+                movieData && (
+                    <div>
+                        <h1>{movieData.username.name}</h1>
+                        <h1>{movieData.username.age}</h1>
+                    </div>
+                )
+            }
+        </div>
+
+    </div>
+  )
+}
+
+export default DisplayData
+
+
